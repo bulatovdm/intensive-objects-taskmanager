@@ -12,7 +12,11 @@ export const isTaskRepeating = (repeating) => {
   return Object.values(repeating).some(Boolean);
 };
 
-export const humanizeTaskDueDate = (dueDate) => {
+export const formatTaskDueDate = (dueDate) => {
+  if (!(dueDate instanceof Date)) {
+    return ``;
+  }
+
   return dayjs(dueDate).format(`D MMMM`);
 };
 
