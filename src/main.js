@@ -391,4 +391,4 @@ for (let i = 0; i < TASK_COUNT; i++) {
   renderTemplate(taskListElement, createTaskTemplate());
 }
 
-renderTemplate(boardElement, createLoadMoreButtonTemplate());
+renderTemplate(boardElement, createLoadMoreButtonTemplate())
