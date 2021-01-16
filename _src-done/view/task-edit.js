@@ -50,16 +50,16 @@ const createTaskEditRepeatingTemplate = (repeating, isRepeating, isDisabled) => 
 
   ${isRepeating ? `<fieldset class="card__repeat-days">
     <div class="card__repeat-days-inner">
-      ${Object.entries(repeating).map(([day, repeat]) => `<input
+      ${Object.entries(repeating).map(([day, repeat], index) => `<input
         class="visually-hidden card__repeat-day-input"
         type="checkbox"
-        id="repeat-${day}"
+        id="repeat-${day}-${index}"
         name="repeat"
         value="${day}"
         ${repeat ? `checked` : ``}
         ${isDisabled ? `checked` : ``}
       />
-      <label class="card__repeat-day" for="repeat-${day}"
+      <label class="card__repeat-day" for="repeat-${day}-${index}"
         >${day}</label
       >`).join(``)}
     </div>
