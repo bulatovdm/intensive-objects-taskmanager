@@ -14,33 +14,34 @@ const BLANK_TASK = {
 };
 
 const createRepeatingDaysTemplate = (repeatingDays, isRepeating) => {
+  const repeatingStatus = isRepeating ? `yes` : `no`;
+  const repeatingTemplate = isRepeating ? `<fieldset class="card__repeat-days">
+                                            <div class="card__repeat-days-inner">
+                                            ${Object
+                                              .entries(repeatingDays)
+                                              .map(([day, repeat]) => `
+                                                <input
+                                                  class="visually-hidden card__repeat-day-input"
+                                                  type="checkbox"
+                                                  id="repeat-${day}"
+                                                  name="repeat"
+                                                  value="${day}"
+                                                  ${repeat ? `checked` : ``}
+                                                />
+                                                <label class="card__repeat-day" for="repeat-${day}"
+                                                  >${day}</label
+                                                >
+                                            `)
+                                            .join(``)}
+                                            </div>
+                                          </fieldset>` : ``;
+
+
   return (
     `<button class="card__repeat-toggle" type="button">
-      repeat:<span class="card__repeat-status">${isRepeating ? `yes` : `no`}</span>
+      repeat:<span class="card__repeat-status">${repeatingStatus}</span>
     </button>
-    ${
-    isRepeating ?
-      `<fieldset class="card__repeat-days">
-          <div class="card__repeat-days-inner">
-          ${Object
-            .entries(repeatingDays)
-            .map(([day, repeat]) => `
-              <input
-                class="visually-hidden card__repeat-day-input"
-                type="checkbox"
-                id="repeat-${day}"
-                name="repeat"
-                value="${day}"
-                ${repeat ? `checked` : ``}
-              />
-              <label class="card__repeat-day" for="repeat-${day}"
-                >${day}</label
-              >
-          `)
-          .join(``)}
-          </div>
-        </fieldset>` : ``
-    }`
+    ${repeatingTemplate}`
   );
 };
 
@@ -67,26 +68,24 @@ const createColorsTemplate = (colors, currentColor) => {
 };
 
 const createDateShowingTemplate = (isDateShowing, date, time) => {
+  const dateShowingText = isDateShowing ? `yes` : `no`;
+  const dateShowingTemplate = isDateShowing ? `<fieldset class="card__date-deadline">
+                                                <label class="card__input-deadline-wrap">
+                                                <input
+                                                  class="card__date"
+                                                  type="text"
+                                                  placeholder=""
+                                                  name="date"
+                                                  value="${date} ${time}"
+                                                />
+                                                </label>
+                                              </fieldset>` : ``;
+
   return (
     `<button class="card__date-deadline-toggle" type="button">
-      date: <span class="card__date-status">${isDateShowing ? `yes` : `no`}</span>
+      date: <span class="card__date-status">${dateShowingText}</span>
     </button>
-
-  ${
-    isDateShowing ?
-      `<fieldset class="card__date-deadline">
-        <label class="card__input-deadline-wrap">
-        <input
-          class="card__date"
-          type="text"
-          placeholder=""
-          name="date"
-          value="${date} ${time}"
-        />
-        </label>
-      </fieldset>`
-      : ``
-    }`
+    ${dateShowingTemplate}`
   );
 };
 
