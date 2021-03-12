@@ -38,3 +38,9 @@ export const Color = {
 };
 
 export const COLORS = Object.values(Color);
+
+export const SortType = {
+  DEFAULT: `default`,
+  DATE_DOWN: `date-down`,
+  DATE_UP: `date-up`
+};
