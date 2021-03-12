@@ -1,8 +1,15 @@
-import {MONTH_NAMES, COLORS, DefaultRepeatingDays} from "../const.js";
+import AbstractView from "./abstract.js";
+
 import {
-  formatTime,
-  createElement
-} from "../utils.js";
+  COLORS,
+  DefaultRepeatingDays
+} from "../const.js";
+
+import {
+  formatTaskDueDate,
+  isTaskExpired,
+  isTaskRepeating
+} from "../utils/task.js";
 
 const BLANK_TASK = {
   color: COLORS[0],
@@ -67,7 +74,7 @@ const createColorsTemplate = (colors, currentColor) => {
     .join(``);
 };
 
-const createDateShowingTemplate = (isDateShowing, date, time) => {
+const createDateShowingTemplate = (isDateShowing, date) => {
   const dateShowingText = isDateShowing ? `yes` : `no`;
   const dateShowingTemplate = isDateShowing ? `<fieldset class="card__date-deadline">
                                                 <label class="card__input-deadline-wrap">
@@ -76,7 +83,7 @@ const createDateShowingTemplate = (isDateShowing, date, time) => {
                                                   type="text"
                                                   placeholder=""
                                                   name="date"
-                                                  value="${date} ${time}"
+                                                  value="${date}"
                                                 />
                                                 </label>
                                               </fieldset>` : ``;
@@ -92,19 +99,18 @@ const createDateShowingTemplate = (isDateShowing, date, time) => {
 const createTaskEditTemplate = (task) => {
   const {description, dueDate, color, repeatingDays} = task;
 
-  const isExpired = dueDate instanceof Date && +dueDate < Date.now();
+  const isExpired = isTaskExpired(dueDate);
   const isDateShowing = !!isExpired;
 
-  const date = isDateShowing ? `${dueDate.getDate()} ${MONTH_NAMES[dueDate.getMonth()]}` : ``;
-  const time = isDateShowing ? `${formatTime(dueDate)}` : ``;
+  const date = formatTaskDueDate(dueDate);
 
-  const isRepeating = Object.values(repeatingDays).some(Boolean);
+  const isRepeating = isTaskRepeating(repeatingDays);
   const repeatClass = `card--repeat`;
   const deadlineClass = isExpired ? `card--deadline` : ``;
 
   const colorsTemplate = createColorsTemplate(COLORS, color);
   const repeatingDaysTemplate = createRepeatingDaysTemplate(repeatingDays, isRepeating);
-  const isDateShowingTemplate = createDateShowingTemplate(isDateShowing, date, time);
+  const isDateShowingTemplate = createDateShowingTemplate(isDateShowing, date);
 
   return (
     `<article class="card card--edit card--${color} ${repeatClass} ${deadlineClass}">
@@ -152,25 +158,26 @@ const createTaskEditTemplate = (task) => {
   );
 };
 
-export default class TaskEdit {
+export default class TaskEdit extends AbstractView {
   constructor(task = BLANK_TASK) {
+    super();
     this._task = task;
-    this._element = null;
+
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
   }
 
   getTemplate() {
     return createTaskEditTemplate(this._task);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit(this._task);
   }
 
-  removeElement() {
-    this._element = null;
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
   }
 }
+

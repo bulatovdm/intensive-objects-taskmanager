@@ -1,5 +1,9 @@
 import {DescriptionItems, DefaultRepeatingDays, COLORS} from "../const.js";
-import {getRandomArrayItem, getRandomIntegerNumber} from "../utils.js";
+
+import {getRandomIntegerNumber} from "../utils/common.js";
+import {getRandomArrayItem} from "../utils/task.js";
+
+const generateId = () => Date.now() + parseInt(Math.random() * 1000, 10);
 
 const getRandomDate = () => {
   const targetDate = new Date();
@@ -20,9 +24,9 @@ const generateTask = () => {
   const dueDate = Math.random() > 0.5 ? null : getRandomDate();
 
   return {
+    id: generateId(),
     description: getRandomArrayItem(DescriptionItems),
     dueDate,
-    isRepeating: Math.random() > 0.5 ? true : false,
     repeatingDays: dueDate ? DefaultRepeatingDays : generateRepeatingDay(),
     color: getRandomArrayItem(COLORS),
     isArchive: Math.random() > 0.5,

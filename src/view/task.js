@@ -1,20 +1,17 @@
-import {MONTH_NAMES} from "../const.js";
+import AbstractView from "./abstract.js";
+
 import {
-  formatTime,
-  createElement
-} from "../utils.js";
+  formatTaskDueDate,
+  isTaskExpired,
+  isTaskRepeating
+} from "../utils/task.js";
 
 const createTaskTemplate = (task) => {
-  const {description, dueDate, color, isArchive, isFavorite, isRepeating} = task;
+  const {description, dueDate, color, isArchive, isFavorite, repeatingDays} = task;
 
-  const isExpired = dueDate instanceof Date && +dueDate < Date.now();
-  const isDateShowing = !!dueDate;
-
-  const date = isDateShowing ? `${dueDate.getDate()} ${MONTH_NAMES[dueDate.getMonth()]}` : ``;
-  const time = isDateShowing ? `${formatTime(dueDate)}` : ``;
-
-  const repeatClass = isRepeating ? `card--repeat` : ``;
-  const deadlineClass = isExpired ? `card--deadline` : ``;
+  const date = formatTaskDueDate(dueDate);
+  const repeatClass = isTaskRepeating(repeatingDays) ? `card--repeat` : ``;
+  const deadlineClass = isTaskExpired(dueDate) ? `card--deadline` : ``;
   const archiveButtonInactiveClass = isArchive ? `` : `card__btn--disabled`;
   const favoriteButtonInactiveClass = isFavorite ? `` : `card__btn--disabled`;
 
@@ -52,7 +49,7 @@ const createTaskTemplate = (task) => {
               <div class="card__dates">
                 <div class="card__date-deadline">
                   <p class="card__input-deadline-wrap">
-                    <span class="card__date">${date} ${time}</span>
+                    <span class="card__date">${date}</span>
                   </p>
                 </div>
               </div>
@@ -64,26 +61,47 @@ const createTaskTemplate = (task) => {
   );
 };
 
-export default class Task {
+export default class Task extends AbstractView {
   constructor(task) {
+    super();
     this._task = task;
 
-    this._element = null;
+    this._editClickHandler = this._editClickHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._archiveClickHandler = this._archiveClickHandler.bind(this);
   }
 
   getTemplate() {
     return createTaskTemplate(this._task);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _editClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editClick();
   }
 
-  removeElement() {
-    this._elemnet = null;
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+  }
+
+  _archiveClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.archiveClick();
+  }
+
+  setEditClickHandler(callback) {
+    this._callback.editClick = callback;
+    this.getElement().querySelector(`.card__btn--edit`).addEventListener(`click`, this._editClickHandler);
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector(`.card__btn--favorites`).addEventListener(`click`, this._favoriteClickHandler);
+  }
+
+  setArchiveClickHandler(callback) {
+    this._callback.archiveClick = callback;
+    this.getElement().querySelector(`.card__btn--archive`).addEventListener(`click`, this._archiveClickHandler);
   }
 }

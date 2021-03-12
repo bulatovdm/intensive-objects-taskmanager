@@ -14,15 +14,6 @@ export const DescriptionItems = [
   `Пройти интенсив на соточку`
 ];
 
-export const filterNames = [
-  `all`,
-  `overdue`,
-  `today`,
-  `favorites`,
-  `repeating`,
-  `archive`,
-];
-
 export const MONTH_NAMES = [
   `January`,
   `February`,

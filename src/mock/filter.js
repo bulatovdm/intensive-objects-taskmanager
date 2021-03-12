@@ -1,12 +1,31 @@
-import {filterNames} from "../const.js";
+import {
+  isTaskExpired,
+  isTaskRepeating,
+  isTaskExpiringToday
+} from "../utils/task.js";
 
-const generateFilters = () => {
-  return filterNames.map((item) => {
+const taskToFilterMap = {
+  all: (tasks) => tasks.filter((task) => !task.isArchive).length,
+  overdue: (tasks) => tasks
+    .filter((task) => !task.isArchive)
+    .filter((task) => isTaskExpired(task.dueDate)).length,
+  today: (tasks) => tasks
+    .filter((task) => !task.isArchive)
+    .filter((task) => isTaskExpiringToday(task.dueDate)).length,
+  favorites: (tasks) => tasks
+    .filter((task) => !task.isArchive)
+    .filter((task) => task.isFavorite).length,
+  repeating: (tasks) => tasks
+    .filter((task) => !task.isArchive)
+    .filter((task) => isTaskRepeating(task.repeatingDays)).length,
+  archive: (tasks) => tasks.filter((task) => task.isArchive).length
+};
+
+export const generateFilters = (tasks) => {
+  return Object.entries(taskToFilterMap).map(([filterName, countTasks]) => {
     return {
-      name: item,
-      count: Math.floor(Math.random() * 10),
+      name: filterName,
+      count: countTasks(tasks),
     };
   });
 };
-
-export {generateFilters};
